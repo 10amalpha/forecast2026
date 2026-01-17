@@ -17,7 +17,7 @@ export default function HorseRace() {
   ])
   const [editing, setEditing] = useState(null)
   const [newPrice, setNewPrice] = useState('')
-  const updatePrice = (ticker) => { const price = parseFloat(newPrice); if (!isNaN(price) && price > 0) setAssets(assets.map(a => a.ticker === ticker ? { ...a, current: price } : a)); setEditing(null); setNewPrice('') }
+  const updatePrice = (ticker: string) => { const price = parseFloat(newPrice); if (!isNaN(price) && price > 0) setAssets(assets.map(a => a.ticker === ticker ? { ...a, current: price } : a)); setEditing(null); setNewPrice('') }
   const getProgress = (a) => Math.min(Math.max(((a.current - a.start) / (a.target - a.start)) * 100, 0), 100)
   const getChange = (a) => ((a.current - a.start) / a.start) * 100
   const sorted = [...assets].sort((a, b) => getProgress(b) - getProgress(a))

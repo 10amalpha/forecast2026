@@ -13,10 +13,10 @@ export default function HorseRace() {
     const sorted = [...assets].sort((a: Asset, b: Asset) => getProgress(b) - getProgress(a))
     return (
           <div style={{ minHeight: '100vh', background: '#1e293b', padding: '40px' }}>
-                  <h1 style={{ color: 'white', textAlign: 'center' }}>Carrera a la Meta 2026</h1>h1>
+                  <h1 style={{ color: 'white', textAlign: 'center' }}>Carrera a la Meta 2026</h1>
             {sorted.map((a: Asset) => (
                     <div key={a.ticker} style={{ margin: '20px 0' }}>
-                                <span style={{ color: 'white' }}>{a.ticker}</span>span>
+                                <span style={{ color: 'white' }}>{a.ticker}</span>
                                 <div style={{ background: '#334155', height: '20px', borderRadius: '10px' }}>
                                               <div style={{ background: a.color, height: '100%', width: `${getProgress(a)}%`, borderRadius: '10px' }}></div>
                                 </div>

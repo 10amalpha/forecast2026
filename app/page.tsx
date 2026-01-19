@@ -72,6 +72,16 @@ const HorseRace = () => {
 
   const getTargetMultiple = (asset: Asset) => asset.target / asset.start
 
+  // Para la barra de velocidad: solo mostrar progreso si hay ganancia real (multiple > 1)
+  const getVelocityBarWidth = (asset: Asset) => {
+    const multiple = getMultiple(asset)
+    if (multiple <= 1) return 0 // Sin progreso si no hay ganancia
+    const targetMultiple = getTargetMultiple(asset)
+    // El progreso va de 1x a targetx
+    const progress = ((multiple - 1) / (targetMultiple - 1)) * 100
+    return Math.min(Math.max(progress, 0), 100)
+  }
+
   const sortedByProgress = [...assets].sort((a, b) => getProgress(b) - getProgress(a))
   const sortedByChange = [...assets].sort((a, b) => getChange(b) - getChange(a))
   const sortedByMultiple = [...assets].sort((a, b) => getMultiple(b) - getMultiple(a))
@@ -181,7 +191,7 @@ const HorseRace = () => {
                 </div>
               </div>
               <div style={{ background: '#334155', height: '20px', borderRadius: '10px', overflow: 'hidden' }}>
-                <div style={{ background: `linear-gradient(90deg, ${a.color}, ${a.color}dd)`, height: '100%', width: `${Math.min((getMultiple(a) / getTargetMultiple(a)) * 100, 100)}%`, borderRadius: '10px', transition: 'width 0.5s ease' }}></div>
+                <div style={{ background: `linear-gradient(90deg, ${a.color}, ${a.color}dd)`, height: '100%', width: `${getVelocityBarWidth(a)}%`, borderRadius: '10px', transition: 'width 0.5s ease' }}></div>
               </div>
             </div>
           ))}

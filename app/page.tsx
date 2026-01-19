@@ -1,4 +1,3 @@
-
 'use client'
 import React, { useState } from 'react'
 
@@ -10,8 +9,8 @@ const HorseRace = () => {
     { ticker: 'HOOD', name: 'Robinhood', start: 120, current: 120, target: 240, color: '#22C55E', icon: '⚡' },
     { ticker: 'TSLA', name: 'Tesla', start: 441, current: 441, target: 850, color: '#EF4444', icon: '🌀' },
     { ticker: 'STKE', name: 'Sol Strategies', start: 2.4, current: 2.4, target: 10, color: '#3B82F6', icon: '🏃' },
-    { ticker: 'QSI', name: 'Quantum-Si', start: 1.27, current: 1.27, target: 7.5, color: '#EC4899', icon: '🏃' },
-    { ticker: 'HIMS', name: 'Hims & Hers', start: 32, current: 32, target: 75, color: '#14B8A6', icon: '🏃' },
+    { ticker: 'QSI', name: 'Quantum-Si', start: 1.27, current: 1.27, target: 7.5, color: '#EC4899', icon: '🔬' },
+    { ticker: 'HIMS', name: 'Hims & Hers', start: 32, current: 32, target: 75, color: '#14B8A6', icon: '💊' },
     { ticker: 'BTC', name: 'Bitcoin', start: 95000, current: 95000, target: 250000, color: '#F59E0B', icon: '₿' },
     { ticker: 'SOL', name: 'Solana', start: 145, current: 145, target: 450, color: '#9333EA', icon: '◎' },
     { ticker: 'JUP', name: 'Jupiter', start: 0.23, current: 0.23, target: 5, color: '#6366F1', icon: '🪐' },
@@ -27,56 +26,26 @@ const HorseRace = () => {
     setIsLoading(true)
     setUpdateStatus('🔄 Claude buscando precios...')
     try {
-      const response = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 1000,
-          tools: [{ type: "web_search_20250305", name: "web_search" }],
-          messages: [{
-            role: "user",
-            content: `Busca los precios actuales de mercado para estos activos usando web search:
-Acciones (US markets): PLTR, HOOD, TSLA, STKE, QSI, HIMS
-Criptomonedas: BTC (Bitcoin), SOL (Solana), JUP (Jupiter), NOS (Nosana), SHDW (Shadow)
-
-Retorna SOLO un objeto JSON sin markdown ni explicación:
-{"PLTR": precio, "HOOD": precio, "TSLA": precio, "STKE": precio, "QSI": precio, "HIMS": precio, "BTC": precio, "SOL": precio, "JUP": precio, "NOS": precio, "SHDW": precio}
-
-Usa los precios más recientes que encuentres.`
-          }]
-        })
-      })
-
+      const response = await fetch('/api/prices', { method: 'POST' })
       const data = await response.json()
-      const textBlocks = data.content.filter((c: {type: string}) => c.type === 'text')
-      let prices = null
-
-      for (const block of textBlocks) {
-        const jsonMatch = block.text.match(/\{[\s\S]*?\}/)
-        if (jsonMatch) {
-          try {
-            prices = JSON.parse(jsonMatch[0])
-            break
-          } catch { continue }
-        }
-      }
-
-      if (prices) {
+      
+      if (data.prices) {
         let updated = 0
         setAssets(prev => prev.map(a => {
-          if (prices[a.ticker] && !isNaN(prices[a.ticker])) {
+          if (data.prices[a.ticker] && !isNaN(data.prices[a.ticker])) {
             updated++
-            return { ...a, current: prices[a.ticker] }
+            return { ...a, current: data.prices[a.ticker] }
           }
           return a
         }))
         setUpdateStatus(`✅ ${updated} precios actualizados`)
+      } else if (data.error) {
+        setUpdateStatus(`⚠️ ${data.error}`)
       } else {
-        setUpdateStatus('⚠️ No se encontraron precios. Usa edición manual')
+        setUpdateStatus('⚠️ No se encontraron precios')
       }
     } catch {
-      setUpdateStatus('⚠️ Error. Usa edición manual')
+      setUpdateStatus('⚠️ Error de conexión')
     }
     setIsLoading(false)
     setTimeout(() => setUpdateStatus(''), 5000)
@@ -97,17 +66,11 @@ Usa los precios más recientes que encuentres.`
     return Math.min(Math.max((gained / total) * 100, 0), 100)
   }
 
-  const getChange = (asset: Asset) => {
-    return ((asset.current - asset.start) / asset.start) * 100
-  }
+  const getChange = (asset: Asset) => ((asset.current - asset.start) / asset.start) * 100
 
-  const getMultiple = (asset: Asset) => {
-    return asset.current / asset.start
-  }
+  const getMultiple = (asset: Asset) => asset.current / asset.start
 
-  const getTargetMultiple = (asset: Asset) => {
-    return asset.target / asset.start
-  }
+  const getTargetMultiple = (asset: Asset) => asset.target / asset.start
 
   const sortedByProgress = [...assets].sort((a, b) => getProgress(b) - getProgress(a))
   const sortedByChange = [...assets].sort((a, b) => getChange(b) - getChange(a))
@@ -119,6 +82,7 @@ Usa los precios más recientes que encuentres.`
   return (
     <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)', padding: '40px 20px' }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+        {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: '30px' }}>
           <h1 style={{ color: 'white', fontSize: '48px', fontWeight: 'bold', marginBottom: '10px' }}>🏇 Carrera a la Meta 2026</h1>
           <p style={{ color: '#94a3b8', fontSize: '18px' }}>Portfolio Tracker 14 Enero - 31 Diciembre 2026</p>
@@ -159,7 +123,7 @@ Usa los precios más recientes que encuentres.`
               <div key={a.ticker} style={{ marginBottom: '12px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
                   <span style={{ color: 'white', fontWeight: '600' }}>{getSpeedIcon(i)} {a.ticker}</span>
-                  <span style={{ color: getChange(a) >= 0 ? '#22c55e' : '#ef4444', fontWeight: 'bold' }}>{getChange(a).toFixed(1)}%</span>
+                  <span style={{ color: getChange(a) >= 0 ? '#22c55e' : '#ef4444', fontWeight: 'bold' }}>{getChange(a) >= 0 ? '+' : ''}{getChange(a).toFixed(1)}%</span>
                 </div>
                 <div style={{ background: '#334155', height: '8px', borderRadius: '4px', overflow: 'hidden' }}>
                   <div style={{ background: getChange(a) >= 0 ? '#22c55e' : '#ef4444', height: '100%', width: `${Math.min(Math.abs(getChange(a)), 100)}%`, borderRadius: '4px' }}></div>
@@ -174,13 +138,13 @@ Usa los precios más recientes que encuentres.`
           <h2 style={{ color: 'white', fontSize: '24px', fontWeight: 'bold', marginBottom: '20px' }}>🎯 Progreso hacia Meta</h2>
           {sortedByProgress.map((a) => (
             <div key={a.ticker} style={{ marginBottom: '20px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap', gap: '8px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <span style={{ fontSize: '20px' }}>{a.icon}</span>
                   <span style={{ color: 'white', fontWeight: 'bold', fontSize: '16px' }}>{a.ticker}</span>
                   <span style={{ color: '#94a3b8', fontSize: '14px' }}>{a.name}</span>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
                   {editing === a.ticker ? (
                     <div style={{ display: 'flex', gap: '8px' }}>
                       <input type="number" value={newPrice} onChange={(e) => setNewPrice(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && updatePrice(a.ticker)}

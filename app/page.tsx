@@ -96,7 +96,7 @@ const HorseRace = () => {
         <span style={{ color: 'white', fontWeight: 'bold', fontSize: '18px' }}>🏇 Carrera a la Meta 2026</span>
         <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
           <a href="https://10am.pro" target="_blank" rel="noopener noreferrer" style={{ color: '#94a3b8', textDecoration: 'none', fontSize: '14px', transition: 'color 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.color = 'white'} onMouseLeave={(e) => e.currentTarget.style.color = '#94a3b8'}>10am.pro</a>
-          <a href="https://dashboards.10am.pro" target="_blank" rel="noopener noreferrer" style={{ color: '#94a3b8', textDecoration: 'none', fontSize: '14px', transition: 'color 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.color = 'white'} onMouseLeave={(e) => e.currentTarget.style.color = '#94a3b8'}>Dashboards</a>
+          <a href="https://10ampro-hub.vercel.app/" target="_blank" rel="noopener noreferrer" style={{ color: '#94a3b8', textDecoration: 'none', fontSize: '14px', transition: 'color 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.color = 'white'} onMouseLeave={(e) => e.currentTarget.style.color = '#94a3b8'}>Dashboards</a>
           <a href="https://x.com/holdmybirra" target="_blank" rel="noopener noreferrer" style={{ color: '#94a3b8', textDecoration: 'none', fontSize: '14px', transition: 'color 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.color = 'white'} onMouseLeave={(e) => e.currentTarget.style.color = '#94a3b8'}>@holdmybirra</a>
         </div>
       </div>

@@ -106,7 +106,7 @@ const HorseRace = () => {
               boxShadow: '0 4px 6px rgba(0,0,0,0.3)', transition: 'all 0.3s', marginTop: '20px'
             }}
           >
-            {isLoading ? '⏳ Actualizando...' : '🔄 Actualizar Precios con Claude'}
+            {isLoading ? '⏳ Actualizando...' : '🔄 Actualizar Precios'}
           </button>
           {updateStatus && <div style={{ color: '#10b981', marginTop: '12px', fontSize: '14px', fontWeight: '500' }}>{updateStatus}</div>}
         </div>
